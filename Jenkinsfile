@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         NEW_VERSION = "${params.VERSION}"
-        SERVER_CREDENTIALS = credentials('server-credentials-id') // Add correct credential ID here
+        SERVER_CREDENTIALS = credentials('server-credentials') // Add correct credential ID here
     }
 
     stages {
