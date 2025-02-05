@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         NEW_VERSION = "${params.VERSION}"
-        SERVER_CREDENTIALS = credentials('server-credentials') // Add correct credential ID here
+        SERVER_CREDENTIALS = credentials('server-credentials') // Ensure the credential ID is correct
     }
 
     stages {
@@ -38,10 +38,8 @@ pipeline {
                 echo "Deploying the application..."
                 echo "Deploying version ${NEW_VERSION}"
                 
-                withCredentials([
-                    usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')
-                ]) {
-                    sh "some script ${USER} ${PWD}"
+                withCredentials([usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]) {
+                    bat "some-windows-script.bat %USER% %PWD%"
                 }
             }
         }
