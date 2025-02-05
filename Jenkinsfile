@@ -39,7 +39,7 @@ pipeline {
                 echo "Deploying version ${NEW_VERSION}"
                 
                 withCredentials([
-                    usernamePassword(credentialsId: 'server-credentials-id', usernameVariable: 'USER', passwordVariable: 'PWD')
+                    usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')
                 ]) {
                     sh "some script ${USER} ${PWD}"
                 }
