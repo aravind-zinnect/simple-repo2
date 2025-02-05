@@ -33,23 +33,37 @@ pipeline {
             }
         }
 
-        stage("Deploy") {
-            steps {
-                echo "Deploying the application..."
-                echo "Deploying version ${NEW_VERSION}"
-                
-                withCredentials([usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]) {
-                    bat """
-                    echo Running deployment script...
-                    if exist some-windows-script.bat (
-                        some-windows-script.bat %USER% %PWD%
-                    ) else (
-                        echo Script not found in workspace.
-                        exit /B 1
-                    )
-                    """
-                }
-            }
+       stage("Deploy") {
+    steps {
+        echo "Deploying the application..."
+        echo "Deploying version ${NEW_VERSION}"
+
+        withCredentials([
+            usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')
+        ]) {
+            bat """
+                echo Running deployment script...
+                if exist some-windows-script.bat (
+                    some-windows-script.bat %USER% %PWD%
+                ) else (
+                    echo Script not found in workspace.
+                    exit /B 1
+                )
+
+                echo Configuring Git...
+                git config --global user.email "your-email@example.com"
+                git config --global user.name "Your Name"
+
+                echo Adding and committing deployment script...
+                git add some-windows-script.bat
+                git commit -m "Add deployment script"
+
+                echo Pushing changes to GitHub...
+                git push origin main
+            """
         }
+    }
+}
+
     }
 }
