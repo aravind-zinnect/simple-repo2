@@ -1,69 +1,49 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven123'
+    }
+    
+    parameters {
+        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: 'Version to deploy on prod')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Run tests before deployment')
+    }
 
     environment {
-        NODE_VERSION = '20'
+        NEW_VERSION = "${params.VERSION}"
+        SERVER_CREDENTIALS = credentials('server-credentials-id') // Add correct credential ID here
     }
 
     stages {
-        stage('Checkout Code') {
+        stage("Build") {
             steps {
-                script {
-                    echo "🔹 Checking out code from Git repository..."
-                    checkout scm
+                echo "Building the application..."
+                echo "Building version ${NEW_VERSION}"
+            }
+        }
+        
+        stage("Test") {
+            when {
+                expression {
+                    return params.executeTests == true
                 }
+            }
+            steps {
+                echo "Testing the application..."
             }
         }
 
-        stage('Setup Node.js v20') {
+        stage("Deploy") {
             steps {
-                script {
-                    echo "🔹 Checking Node.js version..."
-                    bat 'node -v || echo Node.js is not installed'
-
-                    echo "🔹 Installing Node.js v20 if not installed..."
-                    bat """
-                    where node || choco install nodejs --version=${NODE_VERSION} -y
-                    node -v
-                    """
+                echo "Deploying the application..."
+                echo "Deploying version ${NEW_VERSION}"
+                
+                withCredentials([
+                    usernamePassword(credentialsId: 'server-credentials-id', usernameVariable: 'USER', passwordVariable: 'PWD')
+                ]) {
+                    sh "some script ${USER} ${PWD}"
                 }
             }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    echo "🔹 Installing project dependencies..."
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Build Project') {
-            steps {
-                script {
-                    echo "🔹 Building the project..."
-                    bat 'npm run build'  // Change if no build step
-                }
-            }
-        }
-
-        stage('Run Project') {
-            steps {
-                script {
-                    echo "🚀 Starting the application..."
-                    bat 'npm start'
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Build and deployment successful!"
-        }
-        failure {
-            echo "❌ Build failed! Check logs for details."
         }
     }
 }
