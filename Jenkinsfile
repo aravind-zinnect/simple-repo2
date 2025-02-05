@@ -54,16 +54,15 @@ pipeline {
                         git config --global user.email "your-email@example.com"
                         git config --global user.name "Your Name"
 
-                        echo Checking if there are changes...
+                        echo Checking for changes before committing...
                         git status
                         git diff --quiet || (
-                            echo Adding and committing deployment script...
                             git add some-windows-script.bat
                             git commit -m "Add deployment script"
-                            
-                            echo Pushing changes to GitHub...
-                            git push https://<YOUR_GITHUB_TOKEN>@github.com/aravind-zinnect/simple-repo2.git main
                         )
+
+                        echo Pushing changes to GitHub...
+                        git push https://<YOUR_GITHUB_TOKEN>@github.com/aravind-zinnect/simple-repo2.git main
                     """
                 }
             }
