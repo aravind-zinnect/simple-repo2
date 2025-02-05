@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         NEW_VERSION = "${params.VERSION}"
-        SERVER_CREDENTIALS = credentials('server-credentials') // Ensure the credential ID is correct
+        SERVER_CREDENTIALS = credentials('server-credentials') // Add correct credential ID here
     }
 
     stages {
@@ -37,33 +37,11 @@ pipeline {
             steps {
                 echo "Deploying the application..."
                 echo "Deploying version ${NEW_VERSION}"
-
+                
                 withCredentials([
                     usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')
                 ]) {
-                    bat """
-                        echo Running deployment script...
-                        if exist some-windows-script.bat (
-                            some-windows-script.bat %USER% %PWD%
-                        ) else (
-                            echo Script not found in workspace.
-                            exit /B 1
-                        )
-
-                        echo Configuring Git...
-                        git config --global user.email "your-email@example.com"
-                        git config --global user.name "Your Name"
-
-                        echo Checking for changes before committing...
-                        git status
-                        git diff --quiet || (
-                            git add some-windows-script.bat
-                            git commit -m "Add deployment script"
-                        )
-
-                        echo Pushing changes to GitHub...
-                        git push https://<YOUR_GITHUB_TOKEN>@github.com/aravind-zinnect/simple-repo2.git main
-                    """
+                    bat "some_script.bat %USER% %PWD%"
                 }
             }
         }
