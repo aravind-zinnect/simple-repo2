@@ -39,7 +39,15 @@ pipeline {
                 echo "Deploying version ${NEW_VERSION}"
                 
                 withCredentials([usernamePassword(credentialsId: 'server-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]) {
-                    bat "some-windows-script.bat %USER% %PWD%"
+                    bat """
+                    echo Running deployment script...
+                    if exist some-windows-script.bat (
+                        some-windows-script.bat %USER% %PWD%
+                    ) else (
+                        echo Script not found in workspace.
+                        exit /B 1
+                    )
+                    """
                 }
             }
         }
